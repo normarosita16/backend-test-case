@@ -46,7 +46,7 @@ exports.create = async (req, res) => {
     res
       .status(httpStatus.BAD_REQUEST)
       .json(response.error("Bad Request", `member tidak terdaftar`));
-  } else if (membercheck.stock > 1) {
+  } else if (membercheck.borrow_count > 1) {
     res
       .status(httpStatus.BAD_REQUEST)
       .json(response.error("Bad Request", `member sudah pinjam lebih dari 2`));
@@ -61,7 +61,7 @@ exports.create = async (req, res) => {
   })
 
     .then(async (result) => {
-      await Book.update(
+      Book.update(
         {
           stock: bookcheck.stock - 1,
         },
@@ -69,7 +69,7 @@ exports.create = async (req, res) => {
           where: { id: book_id },
         }
       );
-      await Member.update(
+      Member.update(
         {
           borrow_count: membercheck.borrow_count + 1,
         },
@@ -133,7 +133,7 @@ exports.updateReturn = async (req, res) => {
           .status(httpStatus.NOT_FOUND)
           .json(response.error("Not Found", `Memberbook with ID  Not Found`));
 
-      await Book.update(
+      Book.update(
         {
           stock: bookcheck.stock + 1,
         },
@@ -142,7 +142,7 @@ exports.updateReturn = async (req, res) => {
         }
       );
 
-      await Member.update(
+      Member.update(
         {
           borrow_count: membercheck.borrow_count - 1,
           status: status,
@@ -152,7 +152,7 @@ exports.updateReturn = async (req, res) => {
         }
       );
 
-      MemberBook.findByPk(result.dataValues.id).then((data) => {
+      MemberBook.findByPk(result.id).then((data) => {
         res.status(httpStatus.OK).json(response.success("Success", data));
       });
     })

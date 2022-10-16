@@ -16,20 +16,20 @@ const MemberBook = db.MemberBook;
 exports.create = async (req, res) => {
   const { name } = req.body;
 
-  const membercheck = await Member.findAndCountAll({
+  const membercheck = await Member.findAndCountAll();
+  const membercheckname = await Member.findOne({
     where: {
       name: name,
-      distinct: true,
     },
   });
-  if (membercheck) {
+  if (membercheckname) {
     res
       .status(httpStatus.BAD_REQUEST)
       .json(response.error("Bad Request", `member sudah tersedia`));
   }
   Member.create({
     name,
-    code: `M${("0" + membercheck.count).slice(-3)}`,
+    code: `M${("000" + membercheck.count).slice(-3)}`,
     status: "active",
     borrow_count: 0,
   })
