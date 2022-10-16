@@ -16,12 +16,10 @@ const MemberBook = db.MemberBook;
 exports.create = async (req, res) => {
   const { name } = req.body;
 
-  const currentDate = new Date();
-  const timestamp = `${currentDate.getDate()}${currentDate.getHours()}${currentDate.getMinutes()}${currentDate.getSeconds()}`;
-
-  const membercheck = await Member.findOne({
+  const membercheck = await Member.findAndCountAll({
     where: {
       name: name,
+      distinct: true,
     },
   });
   if (membercheck) {
@@ -31,10 +29,7 @@ exports.create = async (req, res) => {
   }
   Member.create({
     name,
-    code: `MEMBER/${currentDate.getMonth() + 1}${currentDate
-      .getFullYear()
-      .toString()
-      .substr(-2)}/${timestamp}`,
+    code: `M${("0" + membercheck.count).slice(-3)}`,
     status: "active",
     borrow_count: 0,
   })
