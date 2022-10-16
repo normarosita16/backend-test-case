@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       book_id: DataTypes.UUID,
       member_id: DataTypes.UUID,
       borrow_date: DataTypes.DATE,
+      deadline_return_date: DataTypes.DATE,
       return_date: DataTypes.DATE,
       status: DataTypes.STRING,
     },

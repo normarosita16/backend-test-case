@@ -35,6 +35,9 @@ module.exports = {
       borrow_date: {
         type: Sequelize.DATE,
       },
+      deadline_return_date: {
+        type: Sequelize.DATE,
+      },
       return_date: {
         type: Sequelize.DATE,
       },

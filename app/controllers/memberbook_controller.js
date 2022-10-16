@@ -18,6 +18,7 @@ exports.create = async (req, res) => {
   const { book_id, member_id } = req.body;
 
   const currentDate = new Date();
+  const lastdate = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   const bookcheck = await Book.findOne({
     where: {
@@ -55,6 +56,7 @@ exports.create = async (req, res) => {
     book_id,
     member_id,
     borrow_date: currentDate,
+    deadline_return_date: lastdate,
     status: "pinjam",
   })
 
@@ -101,6 +103,20 @@ exports.updateReturn = async (req, res) => {
     },
   });
 
+  const memberbookcheck = await MemberBook.findOne({
+    where: {
+      member_id: member_id,
+      book_id: book_id,
+    },
+  });
+
+  let status;
+  if (new Date(memberbookcheck.deadline_return_date) < currentDate) {
+    status = "pinalty";
+  } else {
+    status = "active";
+  }
+
   MemberBook.update(
     {
       return_date: currentDate,
@@ -129,6 +145,7 @@ exports.updateReturn = async (req, res) => {
       await Member.update(
         {
           borrow_count: membercheck.borrow_count - 1,
+          status: status,
         },
         {
           where: { id: member_id },
